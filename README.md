@@ -1,31 +1,81 @@
-# Error Contract
+# ATM Machine Smart Contract
 
-This smart contract, named "Error," provides three functions for testing different error-handling mechanisms in Solidity. The contract is written in Solidity version 0.8.13 and is licensed under the MIT License.
+## Overview
 
-## Functions
+This Solidity smart contract implements a simple ATM (Automated Teller Machine) on the Ethereum blockchain. The contract allows users to interact with their account, deposit money, withdraw funds, and enables the owner to transfer funds between accounts.
 
-### 1. `testRequire(uint _i)`
+## Contract Details
 
-This function uses the `require` statement to validate a condition. It ensures that the input parameter `_i` is greater than 10. If the condition is not met, the function will revert with the error message "Input must be greater than 10."
+### SPDX-License-Identifier
 
-### 2. `testRevert(uint _i)`
+The code is licensed under the MIT License. Please refer to the [License](LICENSE) file for more details.
 
-Similar to `testRequire`, this function checks if the input parameter `_i` is greater than 10. However, instead of using `require`, it employs the `revert` statement. If the condition is not satisfied, the function will revert with the error message "Input must be greater than 10."
+### Solidity Version
 
-### 3. `testAssert(uint num)`
+The contract is written in Solidity version 0.8.13. It is important to ensure that the Ethereum Virtual Machine (EVM) running the contract supports this version.
 
-This function uses the `assert` statement to validate that the input parameter `num` is greater than 5. If the condition is not met, the function will throw an assertion error.
+### Contract Owner
 
-## License
+The contract has an `owner` variable, representing the address of the owner. The owner has special privileges, including the ability to transfer funds between accounts.
 
-This smart contract is licensed under the MIT License. For more details, please refer to the provided SPDX-License-Identifier in the source code.
+### User Balances
 
-## Usage
+User account balances are stored in the `balance` mapping, where the key is the user's address, and the value is their account balance.
 
-To use this contract, deploy it to a compatible Ethereum Virtual Machine (EVM) and interact with the functions as needed. Ensure that the input parameters adhere to the specified conditions to avoid errors and reverts.
+### Modifiers
+
+- **onlyOwner**: A modifier that restricts the execution of certain functions to the owner of the contract.
+
+### Constructor
+
+The constructor initializes the owner as the address that deployed the contract and sets an initial balance of 100 units for the owner.
+
+```solidity
+constructor() {
+    owner = msg.sender;
+    balance[msg.sender] += 100;
+}
+```
+### Functions
+
+## AddMoney
+- Allows users to add money to their account.
+- Requires the added amount to be greater than 10.
+
+```solidity
+function AddMoney(uint g) public {
+    assert(g > 10);
+    balance[msg.sender] += g;
+}
+```
+
+## Withdraw
+- Allows users to withdraw funds from their account.
+- Requires the withdrawal amount to be less than or equal to the user's balance.
+
+```solidity
+function Withdraw(uint p) public {
+    require(p <= balance[msg.sender], "You don't have enough money to withdraw");
+    balance[msg.sender] -= p;
+}
+```
+
+## Transfer
+- Allows the owner to transfer funds between accounts.
+- Only the owner can call this function.
+
+```solidity
+function Transfer(uint t, address _rec) public onlyOwner {
+    balance[_rec] += t;
+    balance[msg.sender] -= t;
+}
+```
+
+### Usage
+-  Deploy the contract to the Ethereum blockchain, and interact with it using a compatible Ethereum wallet or through a decentralized application (DApp).
 
 ## Disclaimer
+- This smart contract is provided as-is and might not be suitable for production use without further testing and security considerations. Use it at your own risk.
 
-This smart contract is provided as-is, without any warranties or guarantees. Use it at your own risk, and be cautious when dealing with smart contracts on a live blockchain.
-
-Feel free to reach out for any questions or improvements to the code. Happy coding!
+## License
+- This project is licensed under the MIT License - see the License file for details.
