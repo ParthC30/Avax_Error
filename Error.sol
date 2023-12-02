@@ -1,39 +1,44 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.0;
 
-contract ATM_MACHINE {
-
-    address owner;
-    mapping (address => uint) public balance;
-
-    modifier onlyOwner {
-        require(msg.sender == owner, "Only Owner can call this function");
+contract GameZone {
+    address public owner;
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
         _;
     }
 
+    mapping(address => bool) public allow;
+    mapping(address => bool) public buyZone;
+
     constructor() {
         owner = msg.sender;
-        balance[msg.sender] += 100;
     }
 
-
-    function AddMoney(uint g) public {
-        assert(g > 10);
-        balance[msg.sender] += g;
+    function allowUser(address user) external onlyOwner {
+        allow[user] = true;
     }
 
-    function Withdraw(uint p) public {
-        require(p <= balance[msg.sender],"You don't have enough money to withdraw");
-        balance[msg.sender] -= p;
+    function removeAllow(address user) external onlyOwner {
+        allow[user] = false;
     }
 
-    function Transfer(uint t, address _rec) public {
-        if(msg.sender != owner){
-            revert("You are not the owner");
-        }else {
-            balance[_rec] += t;
-            balance[msg.sender] -= t;
+    function BuyZone() external returns (bool) {
+        if (!allow[msg.sender]) {
+            revert("User is not allowed to buy");
         }
 
+        buyZone[msg.sender] = true;
+        return true;
+    }
+
+    function sellZone() external returns (bool) {
+        if (buyZone[msg.sender]) {
+            buyZone[msg.sender] = false;
+        } else {
+            assert(false);
+        }
+
+        return true;
     }
 }
