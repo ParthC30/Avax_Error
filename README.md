@@ -1,81 +1,47 @@
-# ATM Machine Smart Contract
+# GameZone Smart Contract
 
 ## Overview
 
-This Solidity smart contract implements a simple ATM (Automated Teller Machine) on the Ethereum blockchain. The contract allows users to interact with their account, deposit money, withdraw funds, and enables the owner to transfer funds between accounts.
+The `GameZone` smart contract is designed to manage user access and functionality within a gaming ecosystem. It provides features for allowing and disallowing users, as well as enabling a buy-and-sell mechanism through the `BuyZone` and `sellZone` functions.
 
 ## Contract Details
 
-### SPDX-License-Identifier
+- **Owner**: The contract is initialized with an owner, and certain functions are restricted to be callable only by the owner using the `onlyOwner` modifier.
 
-The code is licensed under the MIT License. Please refer to the [License](LICENSE) file for more details.
+- **User Access Control**: The contract maintains a mapping of allowed users using the `allow` mapping. The owner has the ability to grant or revoke permission for specific users using the `allowUser` and `removeAllow` functions, respectively.
 
-### Solidity Version
+- **Buy and Sell Mechanism**: Users can interact with the contract by invoking the `BuyZone` and `sellZone` functions. The `BuyZone` function allows users to engage in specific actions, while the `sellZone` function provides a mechanism for users to sell their privileges or assets. The `sellZone` function checks whether the user has previously acquired the buyZone privilege.
 
-The contract is written in Solidity version 0.8.13. It is important to ensure that the Ethereum Virtual Machine (EVM) running the contract supports this version.
+## Functions
 
-### Contract Owner
+### `allowUser(address user)`
 
-The contract has an `owner` variable, representing the address of the owner. The owner has special privileges, including the ability to transfer funds between accounts.
+Allows the contract owner to grant permission to a specific user, enabling them to interact with certain features.
 
-### User Balances
+### `removeAllow(address user)`
 
-User account balances are stored in the `balance` mapping, where the key is the user's address, and the value is their account balance.
+Allows the contract owner to revoke permission from a specific user, restricting their access to certain features.
 
-### Modifiers
+### `BuyZone()`
 
-- **onlyOwner**: A modifier that restricts the execution of certain functions to the owner of the contract.
+Enables users to engage in specific actions or privileges, provided they have been granted permission by the contract owner.
 
-### Constructor
+### `sellZone()`
 
-The constructor initializes the owner as the address that deployed the contract and sets an initial balance of 100 units for the owner.
+Allows users to sell back their privileges or assets. The function checks if the user has previously acquired the buyZone privilege. If true, the privilege is revoked; otherwise, the function fails using `assert`.
 
-```solidity
-constructor() {
-    owner = msg.sender;
-    balance[msg.sender] += 100;
-}
-```
-### Functions
+## Ownership Control
 
-## AddMoney
-- Allows users to add money to their account.
-- Requires the added amount to be greater than 10.
+The contract owner has exclusive control over critical functions, safeguarded by the `onlyOwner` modifier. This ensures that certain actions can only be executed by the entity that deployed the contract.
 
-```solidity
-function AddMoney(uint g) public {
-    assert(g > 10);
-    balance[msg.sender] += g;
-}
-```
+## Usage
 
-## Withdraw
-- Allows users to withdraw funds from their account.
-- Requires the withdrawal amount to be less than or equal to the user's balance.
+1. **Deployment**: Deploy the contract to the Ethereum blockchain.
 
-```solidity
-function Withdraw(uint p) public {
-    require(p <= balance[msg.sender], "You don't have enough money to withdraw");
-    balance[msg.sender] -= p;
-}
-```
+2. **Owner Functions**: The contract owner can manage user permissions using `allowUser` and `removeAllow`.
 
-## Transfer
-- Allows the owner to transfer funds between accounts.
-- Only the owner can call this function.
-
-```solidity
-function Transfer(uint t, address _rec) public onlyOwner {
-    balance[_rec] += t;
-    balance[msg.sender] -= t;
-}
-```
-
-### Usage
--  Deploy the contract to the Ethereum blockchain, and interact with it using a compatible Ethereum wallet or through a decentralized application (DApp).
-
-## Disclaimer
-- This smart contract is provided as-is and might not be suitable for production use without further testing and security considerations. Use it at your own risk.
+3. **User Interaction**: Users can use the `BuyZone` and `sellZone` functions based on their permissions.
 
 ## License
-- This project is licensed under the MIT License - see the License file for details.
+
+This smart contract is released under the MIT License. See the [LICENSE](LICENSE) file for more details.
